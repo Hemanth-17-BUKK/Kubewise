@@ -1,7 +1,8 @@
 fastapi
-uvicorn
+uvicorn[standard]
 boto3
-pydantic
+botocore
 kubernetes
+pydantic
 pydantic-settings
-requests
+PyYAML
