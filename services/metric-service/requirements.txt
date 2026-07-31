@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+boto3
+botocore
+kubernetes
+pydantic
+pydantic-settings
+PyYAML
+requests
