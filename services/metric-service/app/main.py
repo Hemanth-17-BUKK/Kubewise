@@ -16,3 +16,7 @@ def root():
         "service": "Metric Service",
         "status": "running"
     }
+
+@app.get("/health")
+def health():
+    return {"status": "healthy"}

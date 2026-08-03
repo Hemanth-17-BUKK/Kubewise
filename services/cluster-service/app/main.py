@@ -9,6 +9,9 @@ app = FastAPI(
 
 app.include_router(aws_router)
 
+@app.get("/")
+def root():
+    return {"message": "Cluster Service"}
 
 @app.get("/health")
 def health():

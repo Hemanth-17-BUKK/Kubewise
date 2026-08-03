@@ -1,0 +1,65 @@
+namespace: kubeai
+
+services:
+
+  - name: cluster-service
+    enabled: true
+
+    replicaCount: 1
+
+    image:
+      repository: 235951409983.dkr.ecr.us-east-1.amazonaws.com/cluster-service
+      tag: v2
+
+    port: 8001
+
+    serviceAccount: true
+
+    env: []
+
+  - name: monitoring-service
+    enabled: true
+
+    replicaCount: 1
+
+    image:
+      repository: 235951409983.dkr.ecr.us-east-1.amazonaws.com/monitoring-service
+      tag: v2
+
+    port: 8002
+
+    serviceAccount: false
+
+    env: []
+
+  - name: installer-service
+    enabled: true
+
+    replicaCount: 1
+
+    image:
+      repository: 235951409983.dkr.ecr.us-east-1.amazonaws.com/installer-service
+      tag: v2
+
+    port: 8003
+
+    serviceAccount: false
+
+    env: []
+
+  - name: metric-service
+    enabled: true
+
+    replicaCount: 1
+
+    image:
+      repository: 235951409983.dkr.ecr.us-east-1.amazonaws.com/metric-service
+      tag: v2
+
+    port: 8004
+
+    serviceAccount: false
+
+    env:
+      - name: PROMETHEUS_URL
+        value: http://prometheus-server.monitoring.svc.cluster.local

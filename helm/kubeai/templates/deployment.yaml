@@ -1,0 +1,86 @@
+{{- range .Values.services }}
+{{- if .enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .name }}
+  namespace: {{ $.Values.namespace }}
+  labels:
+    app: {{ .name }}
+{{ include "kubeai.labels" $ | indent 4 }}
+
+spec:
+  replicas: {{ .replicaCount }}
+
+  selector:
+    matchLabels:
+      app: {{ .name }}
+
+  strategy:
+    type: RollingUpdate
+
+  template:
+    metadata:
+      labels:
+        app: {{ .name }}
+
+    spec:
+
+{{- if .serviceAccount }}
+      serviceAccountName: {{ .name }}
+{{- end }}
+
+      containers:
+
+        - name: {{ .name }}
+
+          image: "{{ .image.repository }}:{{ .image.tag }}"
+
+          imagePullPolicy: Always
+
+          ports:
+
+            - containerPort: {{ .port }}
+
+{{- if .env }}
+
+          env:
+
+{{- range .env }}
+
+            - name: {{ .name }}
+              value: "{{ .value }}"
+
+{{- end }}
+
+{{- end }}
+
+          readinessProbe:
+            httpGet:
+              path: /
+              port: {{ .port }}
+
+            initialDelaySeconds: 10
+            periodSeconds: 10
+
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ .port }}
+
+            initialDelaySeconds: 30
+            periodSeconds: 20
+
+          resources:
+
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
+{{- end }}
+{{- end }}

@@ -7,6 +7,10 @@ app = FastAPI(title="Kubewise Installer Service")
 app.include_router(prometheus_router)
 
 
+@app.get("/")
+def root():
+    return {"message": "Installer Service"}
+
 @app.get("/health")
 def health():
     return {"status": "healthy"}

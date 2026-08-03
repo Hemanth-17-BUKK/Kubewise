@@ -1,0 +1,7 @@
+apiVersion: v2
+name: kubeai
+description: AI Powered Kubernetes Cost Optimizer
+type: application
+
+version: 0.1.0
+appVersion: "1.0.0"
