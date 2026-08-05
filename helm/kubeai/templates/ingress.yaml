@@ -1,0 +1,92 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+
+metadata:
+  name: kubeai
+  namespace: {{ .Values.namespace }}
+
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]'
+    alb.ingress.kubernetes.io/healthcheck-path: /health
+
+spec:
+  ingressClassName: alb
+
+  rules:
+    - http:
+        paths:
+
+          # Cluster Service
+          - path: /api/v1/aws
+            pathType: Prefix
+            backend:
+              service:
+                name: cluster-service
+                port:
+                  number: 8001
+
+          # Monitoring Service
+          - path: /api/v1/clusters
+            pathType: Prefix
+            backend:
+              service:
+                name: monitoring-service
+                port:
+                  number: 8002
+
+          # Installer Service
+          - path: /api/v1/prometheus
+            pathType: Prefix
+            backend:
+              service:
+                name: installer-service
+                port:
+                  number: 8003
+
+          # Metric Service
+          - path: /metrics
+            pathType: Prefix
+            backend:
+              service:
+                name: metric-service
+                port:
+                  number: 8004
+
+          # Analysis Agent
+          - path: /analyze
+            pathType: Prefix
+            backend:
+              service:
+                name: analysis-agent
+                port:
+                  number: 8005
+
+          # Execution Service
+          - path: /execute
+            pathType: Prefix
+            backend:
+              service:
+                name: execution-service
+                port:
+                  number: 8006
+
+          - path: /executions
+            pathType: Prefix
+            backend:
+              service:
+                name: execution-service
+                port:
+                  number: 8006
+
+          - path: /rollback
+            pathType: Prefix
+            backend:
+              service:
+                name: execution-service
+                port:
+                  number: 8006
+{{- end }}

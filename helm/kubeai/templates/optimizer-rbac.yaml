@@ -1,0 +1,88 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kubewise-optimizer
+  namespace: {{ .Values.namespace }}
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::235951409983:role/eksctl-ai-cost-optimizer-addon-iamserviceacco-Role1-vRC2ggY9cIrM
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kubewise-optimizer
+
+rules:
+
+# Core Kubernetes resources
+- apiGroups: [""]
+  resources:
+    - nodes
+    - pods
+    - namespaces
+    - services
+    - configmaps
+    - events
+  verbs:
+    - get
+    - list
+    - watch
+
+# Required for cordon
+- apiGroups: [""]
+  resources:
+    - nodes
+  verbs:
+    - patch
+    - update
+
+# Pod eviction (Core API)
+- apiGroups:
+    - ""
+  resources:
+    - pods/eviction
+  verbs:
+    - create
+
+# Pod eviction (Policy API)
+- apiGroups:
+    - policy
+  resources:
+    - pods/eviction
+  verbs:
+    - create
+
+# Workload resources
+- apiGroups: ["apps"]
+  resources:
+    - deployments
+    - replicasets
+    - daemonsets
+    - statefulsets
+  verbs:
+    - get
+    - list
+    - watch
+
+# PodDisruptionBudgets
+- apiGroups: ["policy"]
+  resources:
+    - poddisruptionbudgets
+  verbs:
+    - get
+    - list
+    - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kubewise-optimizer
+
+subjects:
+- kind: ServiceAccount
+  name: kubewise-optimizer
+  namespace: {{ .Values.namespace }}
+
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kubewise-optimizer

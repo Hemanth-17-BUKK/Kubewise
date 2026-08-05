@@ -1,5 +1,8 @@
 namespace: kubeai
 
+ingress:
+  enabled: true
+
 services:
 
   - name: cluster-service
@@ -63,3 +66,50 @@ services:
     env:
       - name: PROMETHEUS_URL
         value: http://prometheus-server.monitoring.svc.cluster.local
+
+  - name: analysis-agent
+    enabled: true
+
+    replicaCount: 1
+
+    image:
+      repository: 235951409983.dkr.ecr.us-east-1.amazonaws.com/analysis-agent
+      tag: v3
+
+    port: 8005
+
+    serviceAccount: false
+
+    env:
+      - name: APP_NAME
+        value: analysis-agent
+
+      - name: APP_VERSION
+        value: "1.0.0"
+
+      - name: METRIC_SERVICE_URL
+        value: http://metric-service:8004
+
+      - name: AWS_REGION
+        value: us-east-1
+
+      - name: BEDROCK_MODEL_ID
+        value: amazon.nova-lite-v1:0
+
+      - name: LOG_LEVEL
+        value: INFO
+
+  - name: execution-service
+    enabled: true
+
+    replicaCount: 1
+
+    image:
+      repository: 235951409983.dkr.ecr.us-east-1.amazonaws.com/execution-service
+      tag: v13
+
+    port: 8006
+
+    serviceAccount: true
+
+    env: []

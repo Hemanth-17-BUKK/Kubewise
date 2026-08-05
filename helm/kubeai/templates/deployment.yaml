@@ -27,8 +27,10 @@ spec:
 
     spec:
 
-{{- if .serviceAccount }}
-      serviceAccountName: {{ .name }}
+{{- if or (eq .name "analysis-agent") (eq .name "execution-service") }}
+      serviceAccountName: kubewise-optimizer
+{{- else }}
+      serviceAccountName: kubewise-backend
 {{- end }}
 
       containers:
